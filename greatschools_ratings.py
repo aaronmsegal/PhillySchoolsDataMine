@@ -26,7 +26,8 @@ def parseXML():
         schoolAttrDict['type'] = schoolType
         schoolAttrDict['gsRating'] = gsRating
         schoolAttrDict['parentRating'] = parentRating
-        schoolsDict[name] = schoolAttrDict
+        cleanedName = name.lower().strip()
+        schoolsDict[cleanedName] = schoolAttrDict
         # Print Attributes
         #print name
         #print "GS Rating: " + gsRating
