@@ -11,6 +11,7 @@ def parseXML():
         # Load Attributes
         name = school.find('name').text
         schoolType = school.find('type').text
+        gsID = school.find('gsId').text
         gsRatingRaw = school.find('gsRating')
         if gsRatingRaw is not None:
             gsRating = gsRatingRaw.text
@@ -23,33 +24,30 @@ def parseXML():
             parentRating = "No Parent Rating"
         # Build dictionary
         schoolAttrDict['name'] = name
+        schoolAttrDict['gs_id'] = gsID
         schoolAttrDict['type'] = schoolType
-        schoolAttrDict['gsRating'] = gsRating
-        schoolAttrDict['parentRating'] = parentRating
-        cleanedName = name.lower().strip()
+        schoolAttrDict['gs_rating'] = gsRating
+        schoolAttrDict['parent_rating'] = parentRating
+        cleanedName = name.lower().strip().replace(" ", "_")
         schoolsDict[cleanedName] = schoolAttrDict
-        # Print Attributes
-        #print name
-        #print "GS Rating: " + gsRating
-        #print "Parent Rating " + parentRating
-        #print ""
-    # Print JSON
+    # Return JSON
     return json.dumps(schoolsDict)
 
 def combineJsonFiles(filename, internalJsonString):
-
+    # Load External JSON
     with open(filename, 'r') as externalFile:
         externalJsonString = externalFile.read()
         externalJson = json.loads(externalJsonString)
-
+    # Load JSON
     internalJson = json.loads(internalJsonString)
+    # Loop through files
     for schoolName in internalJson.keys():
         for attribute in externalJson.get(schoolName, {}).keys():
             if not attribute in internalJson[schoolName].keys(): # only add attributes not found in previous file
                 internalJson[schoolName][attribute] = externalJson[schoolName][attribute]
-
-    with open('combined.json', 'w') as outputFile:
-        json.dump(internalJson, outputFile, sort_keys = True)
+    # Write new file
+    with open('GreatSchools_Combined.json', 'w') as outputFile:
+        json.dump(internalJson, outputFile, sort_keys = True, indent = 4, ensure_ascii = False)
 
 def main():
     externalFile = sys.argv[1]
