@@ -1,17 +1,14 @@
 import csv
 import json
 
-def outputIncomeZipCode():
+def outputIncomeZipCode(filename):
   schoolDict = {}
   incomeDict = {}
   outputDict = {}
 
-  with open('Schools.csv') as schoolFile:
-    schoolCSV = csv.DictReader(schoolFile, delimiter=',')
-    for school in schoolCSV:
-      schoolName = school.get('FACIL_NAME').replace('\r','')
-      schoolName = schoolName.replace('\n','')
-      schoolDict[schoolName] = school
+  with open(filename) as schoolFile:
+    jsonString = schoolFile.read()
+    schoolDict = json.loads(jsonString)
 
   with open('median-income-by-zip.csv') as incomeFile:
     incomeCSV = csv.DictReader(incomeFile, delimiter=',')
@@ -19,15 +16,15 @@ def outputIncomeZipCode():
       incomeDict[income.get('Zip Code')] = income
 
   for schoolName in schoolDict.keys():
-    schoolZip = schoolDict.get(schoolName).get('ZIPCODE')
+    schoolZip = schoolDict.get(schoolName).get('zipcode')
     for income in incomeDict.keys():
       incomeZip = incomeDict.get(income).get('Zip Code')
       if str(schoolZip).find(str(incomeZip)) >= 0:
         outputDict[schoolName] = {
-              'ZIPCODE': incomeZip,
-              'POPULATION': incomeDict.get(income).get('Population'),
-              'AVG_HOUSEHOLD_INCOME': incomeDict.get(income).get('Avg. Income/H/hold'),
-              'NATIONAL_INCOME_RANK': incomeDict.get(income).get('National Rank')
+              'zipcode': incomeZip,
+              'population': incomeDict.get(income).get('Population'),
+              'avg_household_income': incomeDict.get(income).get('Avg. Income/H/hold'),
+              'national_income_rank': incomeDict.get(income).get('National Rank')
               }
         break
 
@@ -55,8 +52,8 @@ def combineIncomeZipData(filename):
     json.dump(parsedSchoolJson, outputFile, sort_keys = True)
 
 def main():
-  outputIncomeZipCode()
-  combineIncomeZipData('school_facilities_output.json')
+  outputIncomeZipCode('school_data.json')
+  combineIncomeZipData('school_data.json')
 
 if __name__ == "__main__":
   main()
