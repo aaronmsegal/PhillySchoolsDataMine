@@ -35,13 +35,15 @@ def parseXML():
     # Print JSON
     return json.dumps(schoolsDict)
 
-def combineJsonFiles(filename, internalJson):
+def combineJsonFiles(filename, internalJsonString):
+
     with open(filename, 'r') as externalFile:
         externalJsonString = externalFile.read()
         externalJson = json.loads(externalJsonString)
 
+    internalJson = json.loads(internalJsonString)
     for schoolName in internalJson.keys():
-        for attribute in externalJson[schoolName].keys():
+        for attribute in externalJson.get(schoolName, {}).keys():
             if not attribute in internalJson[schoolName].keys(): # only add attributes not found in previous file
                 internalJson[schoolName][attribute] = externalJson[schoolName][attribute]
 
