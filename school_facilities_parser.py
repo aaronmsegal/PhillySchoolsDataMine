@@ -18,7 +18,7 @@ with open(infile_name, 'r') as infile:
         school_name = row['FACIL_NAME'].lower().strip().replace(' ', '_')
         attributes = dict((key.decode('utf-8-sig').lower().strip().replace(' ', '_'),value) for key, value in row.iteritems() if key != 'FACIL_NAME' and key != 'OBJECTID' and key != 'FACIL_TELEPHONE' and key != 'LOCATION_ID' and key != 'AUN' and key != 'FACIL_ADDRESS' and key != 'SCHOOL_NUM' and key != 'FACILNAME_LABEL')
         if len(attributes['enrollment']) == 0:
-            del attributes['enrollment']
+            attributes['enrollment'] = '?'
         else:
             attributes['enrollment'] = int(attributes['enrollment'])
         attributes['x'] = float(attributes['x'])

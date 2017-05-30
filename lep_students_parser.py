@@ -14,6 +14,7 @@ masterfile_name = args.masterfile
 with open(masterfile_name, 'rw') as masterfile:
     data = json.load(masterfile)
 
+lep_school_data = {}
 wb = load_workbook(infile_name)
 lep_by_school_ws = wb['Page1-1']
 for row in lep_by_school_ws.rows:
@@ -29,9 +30,15 @@ for row in lep_by_school_ws.rows:
         school_name = school_name.replace('_cs-', '_charter_school_at')
         school_name = school_name.replace('_chs', '_charter_high_school')
 
-        if school_name not in data:
-            data[school_name] = {}
-        data[school_name]['lep_students'] = row[4].value
+        lep_school_data[school_name] = {}
+        lep_school_data[school_name]['lep_students'] = row[4].value
+
+for school_name in data.keys():
+    if school_name in lep_school_data:
+        for attribute in lep_school_data[school_name].keys():
+            data[school_name][attribute] = lep_school_data[school_name][attribute]
+    else:
+        data[school_name]['lep_students'] = '?'
 
 with open(masterfile_name, 'w') as masterfile:
     json.dump(data, masterfile, indent=4, sort_keys=True)
