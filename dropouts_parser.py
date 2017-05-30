@@ -1,6 +1,7 @@
 from openpyxl import load_workbook
 import argparse
 import json
+import re
 
 parser = argparse.ArgumentParser()
 parser.add_argument('infile', help='File to parse')
@@ -25,8 +26,11 @@ for row in summary_by_school_ws.rows:
         school_name = school_name.replace('_cs', '_charter_school')
         school_name = school_name.replace('_hs', '_high_school')
         school_name = school_name.replace('_ms', '_middle_school')
-        school_name = school_name.replace('_el_sch', '_elementary_school')
-        school_name = school_name.replace('_intrmd_sch', '_intermediate_school')
+        school_name = school_name.replace('_el_', '_elementary_')
+        school_name = school_name.replace('_intrmd_', '_intermediate_')
+        school_name = re.sub('_sch$', '_school', school_name)
+        school_name = school_name.replace('_cs-', '_charter_school_at')
+        school_name = school_name.replace('_chs', '_charter_high_school')
 
         if school_name not in data:
             data[school_name] = {}
