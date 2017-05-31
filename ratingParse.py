@@ -82,7 +82,7 @@ with open(json_name, 'r') as jsonFile:
                 if not (attribute in schoolsJson.get(schoolName).keys()): # only add attributes not found in previous file
                     schoolsJson[schoolName][attribute] = schools.get(schoolName).get(attribute)
         else:
-            schoolsJson[schoolName] = emptySchool
+            schoolsJson[schoolName].update(emptySchool)
 
 
     with open('output.json', 'w') as outFile:
