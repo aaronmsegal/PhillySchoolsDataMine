@@ -1,48 +1,82 @@
 import csv
 import json
 
-def outputIncomeZipCode():
+def discretize(number):
+  bins = ''
+  if 0 <= number < 10000:
+    bins = '0 - 9,999'
+  elif 10000 <= number < 20000:
+    bins = '10,000 - 19,999'
+  elif 20000 <= number < 30000:
+    bins = '20,000 - 29,999'
+  elif 30000 <= number < 40000:
+    bins = '30,000 - 39,999'
+  elif 40000 <= number < 50000:
+    bins = '40,000 - 49,999'
+  elif 50000 <= number < 60000:
+    bins = '50,000 - 59,999'
+  elif 60000 <= number < 70000:
+    bins = '60,000 - 69,999'
+  elif 70000 <= number < 80000:
+    bins = '70,000 - 79,999'
+  elif 80000 <= number < 90000:
+    bins = '80,000 - 89,999'
+  elif 90000 <= number < 100000:
+    bins = '90,000 - 99,999'
+  else:
+    bins = '> 100,000'
+  return bins
+
+def zip_data_to_json(jsonFile):
   schoolDict = {}
   incomeDict = {}
   outputDict = {}
 
-  with open('Schools.csv') as schoolFile:
-    schoolCSV = csv.DictReader(schoolFile, delimiter=',')
-    for school in schoolCSV:
-      schoolName = school.get('FACIL_NAME').replace('\r','')
-      schoolName = schoolName.replace('\n','')
-      schoolDict[schoolName] = school
+  with open(jsonFile) as schoolFile:
+    jsonString = schoolFile.read()
+    schoolDict = json.loads(jsonString)
 
-  with open('median-income-by-zip.csv') as incomeFile:
+  csvFile = 'median-income-by-zip.csv'
+
+  with open(csvFile) as incomeFile:
     incomeCSV = csv.DictReader(incomeFile, delimiter=',')
     for income in incomeCSV:
       incomeDict[income.get('Zip Code')] = income
 
   for schoolName in schoolDict.keys():
-    schoolZip = schoolDict.get(schoolName).get('ZIPCODE')
+    schoolZip = schoolDict.get(schoolName).get('zipcode')
     for income in incomeDict.keys():
       incomeZip = incomeDict.get(income).get('Zip Code')
       if str(schoolZip).find(str(incomeZip)) >= 0:
+
+        population = int(incomeDict.get(income).get('Population'))
+        avg_household_income = int(incomeDict.get(income).get('Avg. Income/H/hold'))
+        national_income_rank = int(incomeDict.get(income).get('National Rank'))
+
         outputDict[schoolName] = {
-              'ZIPCODE': incomeZip,
-              'POPULATION': incomeDict.get(income).get('Population'),
-              'AVG_HOUSEHOLD_INCOME': incomeDict.get(income).get('Avg. Income/H/hold'),
-              'NATIONAL_INCOME_RANK': incomeDict.get(income).get('National Rank')
+              'zipcode': incomeZip,
+              'population': discretize(population),
+              'avg_household_income': discretize(avg_household_income),
+              'national_income_rank': discretize(national_income_rank)
               }
         break
 
-  with open('zipcode_income.json', 'w') as outputFile:
+  out = 'zipcode_income.json'
+
+  with open(out, 'w') as outputFile:
     json.dump(outputDict, outputFile, sort_keys = True)
 
-def combineIncomeZipData(filename):
+def combine_with_zip_json(jsonFile):
   parsedIncomeJson = {}
   parsedSchoolJson = {}
 
-  with open('zipcode_income.json', 'r') as jsonFile:
-    jsonString = jsonFile.read()
+  zipJson = 'zipcode_income.json'
+
+  with open(zipJson, 'r') as file:
+    jsonString = file.read()
     parsedIncomeJson = json.loads(jsonString)
 
-  with open(filename, 'r') as fileToCombineWith:
+  with open(jsonFile, 'r') as fileToCombineWith:
     jsonString = fileToCombineWith.read()
     parsedSchoolJson = json.loads(jsonString)
 
@@ -51,12 +85,14 @@ def combineIncomeZipData(filename):
       if not attribute in parsedSchoolJson[schoolName].keys(): # only add attributes not found in previous file
         parsedSchoolJson[schoolName][attribute] = parsedIncomeJson[schoolName][attribute]
 
-  with open('combined_zip_output.json', 'w') as outputFile:
+  out = 'combined_zip_output.json'
+
+  with open(out, 'w') as outputFile:
     json.dump(parsedSchoolJson, outputFile, sort_keys = True)
 
 def main():
-  outputIncomeZipCode()
-  combineIncomeZipData('school_facilities_output.json')
+  zip_data_to_json('school_data.json')
+  combine_with_zip_json('school_data.json')
 
 if __name__ == "__main__":
   main()
