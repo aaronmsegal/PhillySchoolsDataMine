@@ -55,13 +55,13 @@ def zip_data_to_json(jsonFile):
 
         outputDict[schoolName] = {
               'zipcode': incomeZip,
-              'population': discretize(population),
-              'avg_household_income': discretize(avg_household_income),
-              'national_income_rank': discretize(national_income_rank)
+              'population': population,
+              'avg_household_income': avg_household_income,
+              'national_income_rank': national_income_rank
               }
         break
 
-  out = 'zipcode_income.json'
+  out = 'zipcode_income_no_disc.json'
 
   with open(out, 'w') as outputFile:
     json.dump(outputDict, outputFile, sort_keys = True)
@@ -70,7 +70,7 @@ def combine_with_zip_json(jsonFile):
   parsedIncomeJson = {}
   parsedSchoolJson = {}
 
-  zipJson = 'zipcode_income.json'
+  zipJson = 'zipcode_income_no_disc.json'
 
   with open(zipJson, 'r') as file:
     jsonString = file.read()
@@ -85,14 +85,14 @@ def combine_with_zip_json(jsonFile):
       if not attribute in parsedSchoolJson[schoolName].keys(): # only add attributes not found in previous file
         parsedSchoolJson[schoolName][attribute] = parsedIncomeJson[schoolName][attribute]
 
-  out = 'combined_zip_output.json'
+  out = 'combined_zip_output_no_disc.json'
 
   with open(out, 'w') as outputFile:
     json.dump(parsedSchoolJson, outputFile, sort_keys = True)
 
 def main():
-  zip_data_to_json('school_data.json')
-  combine_with_zip_json('school_data.json')
+  zip_data_to_json('school_data_v2.json')
+  combine_with_zip_json('school_data_v2.json')
 
 if __name__ == "__main__":
   main()

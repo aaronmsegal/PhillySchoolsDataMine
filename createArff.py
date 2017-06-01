@@ -27,13 +27,13 @@ def writeToArff(filename):
       for i in range(len(attrList)):
         attr = attrList[i]
         attrValue = parsedCombinedJson[school][attr]
-        line = attrValue + ', '
+        line = '{0}, '.format(attrValue)
         if i == len(attrList)-1:
-          line = attrValue + '\n\n'
+          line = '{0}\n\n'.format(attrValue)
         arffFile.write(line)
 
 def main():
-  writeToArff('combined_zip_output.json')
+  writeToArff('SchoolProgressAdded.json')
 
 if __name__ == "__main__":
   main()
