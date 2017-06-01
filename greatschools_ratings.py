@@ -16,12 +16,12 @@ def parseXML():
         if gsRatingRaw is not None:
             gsRating = gsRatingRaw.text
         else:
-            gsRating = "No GreatSchools Rating"
+            gsRating = "?"
         parentRatingRaw = school.find('parentRating')
         if parentRatingRaw is not None:
             parentRating = parentRatingRaw.text
         else:
-            parentRating = "No Parent Rating"
+            parentRating = "?"
         # Build dictionary
         schoolAttrDict['name'] = name
         schoolAttrDict['gs_id'] = gsID
@@ -41,13 +41,13 @@ def combineJsonFiles(filename, internalJsonString):
     # Load JSON
     internalJson = json.loads(internalJsonString)
     # Loop through files
-    for schoolName in internalJson.keys():
-        for attribute in externalJson.get(schoolName, {}).keys():
-            if not attribute in internalJson[schoolName].keys(): # only add attributes not found in previous file
-                internalJson[schoolName][attribute] = externalJson[schoolName][attribute]
+    for schoolName in externalJson.keys():
+        for attribute in internalJson.get(schoolName, {}).keys():
+            if not attribute in externalJson[schoolName].keys(): # only add attributes not found in previous file
+                externalJson[schoolName][attribute] = internalJson[schoolName][attribute]
     # Write new file
     with open('GreatSchools_Combined.json', 'w') as outputFile:
-        json.dump(internalJson, outputFile, sort_keys = True, indent = 4, ensure_ascii = False)
+        json.dump(externalJson, outputFile, sort_keys = True, indent = 4, ensure_ascii = False)
 
 def main():
     externalFile = sys.argv[1]
