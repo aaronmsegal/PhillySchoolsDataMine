@@ -42,9 +42,16 @@ def combineJsonFiles(filename, internalJsonString):
     internalJson = json.loads(internalJsonString)
     # Loop through files
     for schoolName in externalJson.keys():
-        for attribute in internalJson.get(schoolName, {}).keys():
-            if not attribute in externalJson[schoolName].keys(): # only add attributes not found in previous file
-                externalJson[schoolName][attribute] = internalJson[schoolName][attribute]
+        if schoolName not in internalJson.keys():
+            externalJson[schoolName]['name'] = '?'
+            externalJson[schoolName]['gs_id'] = '?'
+            externalJson[schoolName]['type'] = '?'
+            externalJson[schoolName]['gs_rating'] = '?'
+            externalJson[schoolName]['parent_rating'] = '?'
+        else:
+            for attribute in internalJson.get(schoolName, {}).keys():
+                if not attribute in externalJson[schoolName].keys(): # only add attributes not found in previous file
+                    externalJson[schoolName][attribute] = internalJson[schoolName][attribute]
     # Write new file
     with open('GreatSchools_Combined.json', 'w') as outputFile:
         json.dump(externalJson, outputFile, sort_keys = True, indent = 4, ensure_ascii = False)
