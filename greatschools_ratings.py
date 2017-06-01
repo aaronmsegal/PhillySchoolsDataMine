@@ -16,12 +16,12 @@ def parseXML():
         if gsRatingRaw is not None:
             gsRating = gsRatingRaw.text
         else:
-            gsRating = "No GreatSchools Rating"
+            gsRating = "?"
         parentRatingRaw = school.find('parentRating')
         if parentRatingRaw is not None:
             parentRating = parentRatingRaw.text
         else:
-            parentRating = "No Parent Rating"
+            parentRating = "?"
         # Build dictionary
         schoolAttrDict['name'] = name
         schoolAttrDict['gs_id'] = gsID
