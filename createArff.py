@@ -27,7 +27,7 @@ def writeToArff(filename):
       for i in range(len(attrList)):
         attr = attrList[i]
         attrValue = parsedCombinedJson[school][attr]
-        line = attrValue + ', '
+        line = str(attrValue) + ', '
         if i == len(attrList)-1:
           line = attrValue + '\n\n'
         arffFile.write(line)
