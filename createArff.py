@@ -33,7 +33,7 @@ def writeToArff(filename):
         arffFile.write(line)
 
 def main():
-  writeToArff('SchoolProgressAdded.json')
+  writeToArff('combined_zip_output.json')
 
 if __name__ == "__main__":
   main()
