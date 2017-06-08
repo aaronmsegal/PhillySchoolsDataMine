@@ -39,7 +39,7 @@ def wrapInQuotes(s):
   return qString
 
 def main():
-  writeToArff('masterfile.json')
+  writeToArff('output.json')
 
 if __name__ == "__main__":
   main()
